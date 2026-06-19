@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Bright Bento Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #ffe8ff 50%, #e0e7ff 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06);
+            border-radius: 24px;
+            padding: 24px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.65);
+            border-color: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 16px 48px 0 rgba(31, 38, 135, 0.12);
+        }
+
+        .task-node {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+
+        /* Glowing Neon hardware custom bars */
+        .neon-glow-cpu {
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+            transition: width 0.8s ease-in-out;
+        }
+        .neon-glow-ram {
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+            transition: width 0.8s ease-in-out;
+        }
+
+        ul::-webkit-scrollbar {
+            width: 5px;
+        }
+        ul::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ul::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 p-4 md:p-12">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <div class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl px-6 py-4 flex flex-wrap justify-between items-center shadow-lg border border-indigo-400/30 gap-3">
+            <div class="flex items-center gap-3">
+                <span class="inline-block bg-white text-indigo-700 animate-pulse text-[11px] font-black px-2.5 py-1 rounded tracking-widest shadow-md uppercase">
+                    LIVE MATCH
+                </span>
+                <span id="cricket-title" class="text-sm font-black tracking-wide text-white drop-shadow-sm">
+                    Loading dynamic match line...
+                </span>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-right">
+                    <span id="cricket-score" class="text-base font-black text-white tracking-tight">---/--</span>
+                    <span id="cricket-overs" class="text-xs font-bold text-indigo-200 ml-1.5">(--.- Ovs)</span>
+                </div>
+                <div id="cricket-status" class="text-xs font-bold text-white bg-white/20 px-3.5 py-1.5 rounded-xl border border-white/30 backdrop-blur-sm shadow-sm">
+                    Syncing scorecard...
+                </div>
+            </div>
+        </div>
+
+        <header class="flex justify-between items-center border-b border-slate-300/60 pb-4">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">MY DASHBOARD</h1>
+                <p id="ui-date" class="text-xs text-slate-500 font-semibold tracking-wider uppercase mt-1">Fetching System Date...</p>
+            </div>
+            <span class="px-4 py-1.5 text-xs font-bold rounded-full bg-blue-500/10 text-blue-600 border border-blue-500/20 shadow-sm">SYSTEM STATUS: LIVE</span>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <div class="glass flex flex-col justify-between min-h-[190px] bg-gradient-to-br from-amber-50/40 to-transparent">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Live Weather</p>
+                        <h3 id="ui-city" class="text-2xl font-black mt-1 text-slate-800">----</h3>
+                    </div>
+                    <span class="text-3xl filter drop-shadow">☀️</span>
+                </div>
+                <div class="flex items-baseline gap-4 mt-4">
+                    <span id="ui-temp" class="text-5xl font-black text-blue-600 tracking-tight">--°C</span>
+                    <span id="ui-humidity" class="text-xs font-bold text-slate-500 bg-white/60 px-2.5 py-1 rounded-md">Humidity: --</span>
+                </div>
+            </div>
+
+            <div class="glass lg:col-span-2 flex flex-col justify-between min-h-[190px] bg-gradient-to-tr from-violet-500/5 via-transparent to-transparent">
+                <div>
+                    <p class="text-[11px] font-bold uppercase tracking-widest text-violet-600">Daily Wisdom Focus</p>
+                    <p id="ui-quote" class="text-lg italic font-semibold mt-3 text-slate-800 leading-relaxed">
+                        "Loading your beautiful inspiration stream directly..."
+                    </p>
+                </div>
+                <div id="ui-suggestion" class="text-xs font-bold text-indigo-600/90 border-t border-slate-200/80 pt-3 flex items-center gap-1.5">
+                    ✨ Fetching active system focus suggestion...
+                </div>
+            </div>
+
+            <div class="glass flex flex-col justify-between min-h-[200px] bg-gradient-to-br from-slate-50 to-transparent">
+                <div>
+                    <p class="text-[11px] font-bold uppercase tracking-widest text-indigo-600 mb-4">Hardware Monitor Telemetry</p>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs font-bold text-slate-600 mb-1.5">
+                            <span>Central Processor (CPU)</span>
+                            <span id="cpu-text" class="text-blue-600">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-200/70 h-3 rounded-full overflow-hidden p-0.5">
+                            <div id="cpu-bar" class="bg-blue-500 h-full rounded-full neon-glow-cpu" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-600 mb-1.5">
+                            <span>Volatile Memory (RAM)</span>
+                            <span id="ram-text" class="text-purple-600">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-200/70 h-3 rounded-full overflow-hidden p-0.5">
+                            <div id="ram-bar" class="bg-purple-500 h-full rounded-full neon-glow-ram" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-[10px] font-semibold text-slate-400 tracking-wide mt-2">Hardware Loop: 3 Seconds</p>
+            </div>
+
+            <div class="glass lg:col-span-2 flex flex-col justify-between min-h-[150px]">
+                <div>
+                    <p class="text-[11px] font-bold uppercase tracking-widest text-amber-600">Global Headliner</p>
+                    <h4 id="ui-news" class="text-sm font-bold mt-3 text-slate-700 leading-snug">
+                        Retrieving top stories from worldwide news network...
+                    </h4>
+                </div>
+                <div class="flex items-center justify-between text-[11px] font-semibold text-slate-400 mt-2">
+                    <span>Source Feed: Live Node</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-400 animate-pulse"></span>
+                </div>
+            </div>
+
+            <div class="glass lg:col-span-3 flex flex-col justify-between bg-gradient-to-br from-rose-50/10 to-transparent">
+                <div>
+                    <p class="text-[11px] font-bold uppercase tracking-widest text-rose-500 mb-4">Action Pipeline</p>
+                    <div class="flex gap-2 mb-4">
+                        <input id="task-input" type="text" placeholder="Type a critical task here..." 
+                               class="w-full bg-white/80 border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-blue-500 text-slate-800 transition-all shadow-sm">
+                        <button onclick="commitTask()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:shadow-lg">
+                            Commit
+                        </button>
+                    </div>
+                    <ul id="task-list" class="space-y-2 max-h-[150px] overflow-y-auto pr-1">
+                        </ul>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const TARGET_API = "http://localhost:8000/api";
+
+        document.getElementById('ui-date').innerText = new Date().toLocaleDateString('en-US', {
+            weekday: 'long', year: 'numeric', month: 'short', day: 'numeric'
+        });
+
+        async function runFullSystemRefresh() {
+            try {
+                const response = await fetch(`${TARGET_API}/dashboard/all?city=Vijayawada`);
+                if (response.ok) {
+                    const data = await response.json();
+                    renderUIData(data);
+                }
+            } catch (err) {
+                console.warn("Full cloud integration pipeline is warming up...");
+            }
+        }
+
+        async function runFastHardwareUpdate() {
+            try {
+                const response = await fetch(`${TARGET_API}/dashboard/fast`);
+                if (response.ok) {
+                    const data = await response.json();
+                    renderUIData(data);
+                }
+            } catch (err) {
+                console.warn("Hardware update tracking missed a tick.");
+            }
+        }
+
+        function renderUIData(payload) {
+            document.getElementById('ui-city').innerText = payload.weather.city;
+            document.getElementById('ui-temp').innerText = payload.weather.temperature;
+            document.getElementById('ui-humidity').innerText = `Humidity: ${payload.weather.humidity}`;
+            document.getElementById('ui-news').innerText = payload.news.headline;
+            document.getElementById('ui-quote').innerText = `"${payload.ai_productivity.quote}"`;
+            document.getElementById('ui-suggestion').innerText = `💡 ${payload.ai_productivity.suggestion}`;
+
+            // Cricket Scores
+            document.getElementById('cricket-title').innerText = payload.cricket.match;
+            document.getElementById('cricket-score').innerText = payload.cricket.score;
+            document.getElementById('cricket-overs').innerText = `(${payload.cricket.overs})`;
+            document.getElementById('cricket-status').innerText = payload.cricket.status;
+
+            // Hardware stats bars
+            document.getElementById('cpu-text').innerText = `${payload.system_hardware.cpu}%`;
+            document.getElementById('cpu-bar').style.width = `${payload.system_hardware.cpu}%`;
+            document.getElementById('ram-text').innerText = `${payload.system_hardware.ram}%`;
+            document.getElementById('ram-bar').style.width = `${payload.system_hardware.ram}%`;
+
+            buildTaskNodes(payload.tasks);
+        }
+
+        function buildTaskNodes(tasks) {
+            const container = document.getElementById('task-list');
+            if (tasks.length === 0) {
+                container.innerHTML = `<li class="text-[12px] text-slate-400 italic py-1 pl-1">Your task pipeline is currently empty.</li>`;
+                return;
+            }
+            container.innerHTML = tasks.map(t => `
+                <li class="task-node">
+                    <span class="text-xs font-bold text-slate-700">${t.title}</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                </li>
+            `).join('');
+        }
+
+        async function commitTask() {
+            const node = document.getElementById('task-input');
+            const value = node.value.trim();
+            if (!value) return;
+
+            try {
+                const trigger = await fetch(`${TARGET_API}/tasks?title=${encodeURIComponent(value)}`, { method: 'POST' });
+                if (trigger.ok) {
+                    node.value = '';
+                    runFastHardwareUpdate(); 
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        window.onload = () => {
+            runFullSystemRefresh();
+            setInterval(runFastHardwareUpdate, 3000);
+            setInterval(runFullSystemRefresh, 600000);
+        };
+    </script>
+</body>
+</html>

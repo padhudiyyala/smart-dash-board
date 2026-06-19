@@ -1,0 +1,10 @@
+# Ignore the local SQLite database
+*.db
+dashboard.db
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore the virtual environment folder
+venv/
